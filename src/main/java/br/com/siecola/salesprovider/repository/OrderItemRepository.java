@@ -86,18 +86,14 @@ public class OrderItemRepository {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter filter = new Query.FilterPredicate("__key__",
-                Query.FilterOperator.EQUAL, KeyFactory.createKey(ORDER_ITEM_KIND, id));
-
-        Query query = new Query(ORDER_ITEM_KIND).setFilter(filter);
-
-        Entity entity = datastore.prepare(query).asSingleEntity();
-
-        if (entity != null) {
+        Key parent = KeyFactory.createKey(ORDER_ITEM_KIND, ORDER_ITEM_KEY);
+        Key key = KeyFactory.createKey(parent, ORDER_ITEM_KIND, id);
+        try {
+            Entity entity = datastore.get(key);
             datastore.delete(entity.getKey());
 
             return entityToOrderItem(entity);
-        } else {
+        } catch (EntityNotFoundException e) {
             throw new OrderItemNotFoundException("OrderItem " + id
                     + " not found");
         }

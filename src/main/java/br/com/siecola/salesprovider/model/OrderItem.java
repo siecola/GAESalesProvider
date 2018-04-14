@@ -6,7 +6,6 @@ public class OrderItem implements Serializable {
 
     private long id;
     private long productId;
-    private Product product;
     private long orderId;
 
     public long getId() {
@@ -23,14 +22,6 @@ public class OrderItem implements Serializable {
 
     public void setProductId(long productId) {
         this.productId = productId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     public long getOrderId() {

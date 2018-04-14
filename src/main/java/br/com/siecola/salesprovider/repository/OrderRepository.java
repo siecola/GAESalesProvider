@@ -47,16 +47,12 @@ public class OrderRepository {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter filter = new Query.FilterPredicate("__key__",
-                Query.FilterOperator.EQUAL, KeyFactory.createKey(ORDER_KIND, id));
-
-        Query query = new Query(ORDER_KIND).setFilter(filter);
-
-        Entity entity = datastore.prepare(query).asSingleEntity();
-
-        if (entity != null) {
+        try {
+            Key parent = KeyFactory.createKey(ORDER_KIND, ORDER_KEY);
+            Key key = KeyFactory.createKey(parent, ORDER_KIND, id);
+            Entity entity = datastore.get(key);
             return Optional.ofNullable(entityToOrder(entity));
-        } else {
+        } catch (EntityNotFoundException e) {
             return Optional.empty();
         }
     }
@@ -87,34 +83,32 @@ public class OrderRepository {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-            Key key = KeyFactory.createKey(ORDER_KIND, ORDER_KEY);
-            Entity entity = new Entity(ORDER_KIND, key);
+        Key key = KeyFactory.createKey(ORDER_KIND, ORDER_KEY);
+        Entity entity = new Entity(ORDER_KIND, key);
 
-            orderToEntity (order, entity);
+        orderToEntity (order, entity);
 
-            datastore.put(entity);
+        datastore.put(entity);
 
-            order.setId(entity.getKey().getId());
+        order.setId(entity.getKey().getId());
 
-            return order;
+        return order;
     }
 
     public Order deleteOrder (long id) throws OrderNotFoundException {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter filter = new Query.FilterPredicate("__key__",
-                Query.FilterOperator.EQUAL, KeyFactory.createKey(ORDER_KIND, id));
+        Key parent = KeyFactory.createKey(ORDER_KIND, ORDER_KEY);
+        Key key = KeyFactory.createKey(parent, ORDER_KIND, id);
+        Entity entity = null;
 
-        Query query = new Query(ORDER_KIND).setFilter(filter);
-
-        Entity entity = datastore.prepare(query).asSingleEntity();
-
-        if (entity != null) {
+        try {
+            entity = datastore.get(key);
             datastore.delete(entity.getKey());
 
             return entityToOrder(entity);
-        } else {
+        } catch (EntityNotFoundException e) {
             throw new OrderNotFoundException("Order " + id
                     + " not found");
         }
