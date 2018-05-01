@@ -19,12 +19,14 @@ Para obter o token de acesso, a aplicação cliente deve fazer uma requisição 
 
 **Cabeçalhos:** 
 
-	* Content-Type: application/x-www-form-urlencoded
+* Content-Type: application/x-www-form-urlencoded
+
+
 * Authorization: Basic c2llY29sYTptYXRpbGRl
 
 **Corpo da mensagem:**
 
-```xml
+```
 grant_type=password&username=matilde@siecola.com.br&password=matilde
 ```
 
