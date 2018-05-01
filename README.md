@@ -46,7 +46,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 
 
-> **Usuário com papel ADMIN
+> **Usuário com papel ADMIN**
 >
 > O provedor de serviço de vendas já possui um usuário com papel de administrador, que não pode ser alterado nem apagado. Seu login é `matilde@siecola.com.br` e sua senha é `matilde`.
 
@@ -134,7 +134,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** PUT
 
-**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email={email}
 
 **Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
 
@@ -174,7 +174,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** GET
 
-**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email={email}
 
 **Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
 
@@ -199,7 +199,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** DELETE
 
-**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email={email}
 
 **Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
 
@@ -222,7 +222,359 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 ## 4 - Serviço de gerenciamento de produtos
 
+### a) Listar todos os produtos
 
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/products
+
+**Permissão de acesso:** qualquer usuário autenticado
+
+**Exemplo de resposta:**
+
+```json
+[
+    {
+        "id": 5707702298738688,
+        "name": "product1",
+        "description": "description1",
+        "code": "COD1",
+        "price": 10
+    },
+    {
+        "id": 5668600916475904,
+        "name": "product2",
+        "description": "description2",
+        "code": "COD2",
+        "price": 20
+    }
+]
+```
+
+
+
+### b) Buscar produto pelo código
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/products/{code}
+
+**Permissão de acesso:** qualquer usuário autenticado
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5707702298738688,
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+
+
+### c) Criar produto
+
+**Método:** POST
+
+**URL:** https://sales-provider.appspot.com/api/products
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de corpo de requisição:**
+
+```json
+{
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5707702298738688,
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+### 
+
+### d) Alterar produto
+
+**Método:** POST
+
+**URL:** https://sales-provider.appspot.com/api/products/{code}
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de corpo de requisição:**
+
+```json
+{
+    "id": 5707702298738688,
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5707702298738688,
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+### 
+
+### e) Apagar produto
+
+**Método:** DELETE
+
+**URL:** https://sales-provider.appspot.com/api/products/{code}
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5707702298738688,
+    "name": "product1",
+    "description": "description1",
+    "code": "COD1",
+    "price": 10
+}
+```
+
+### 
 
 ## 5 - Serviço de gerenciamento de pedidos
 
+### a) Listar todos os pedidos
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/orders
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de resposta:**
+
+```json
+[
+    {
+        "id": 5668600916475904,
+        "email": "doralice@siecola.com.br",
+        "freightPrice": 40,
+        "orderItems": [
+            {
+                "id": 5649050225344512,
+                "productId": 5707702298738688,
+                "orderId": 5668600916475904
+            },
+            {
+                "id": 5724160613416960,
+                "productId": 5668600916475904,
+                "orderId": 5668600916475904
+            }
+        ]
+    },
+    {
+        "id": 5741031244955648,
+        "email": "doralice@siecola.com.br",
+        "freightPrice": 40,
+        "orderItems": [
+            {
+                "id": 5685265389584384,
+                "productId": 5707702298738688,
+                "orderId": 5741031244955648
+            },
+            {
+                "id": 5757334940811264,
+                "productId": 5668600916475904,
+                "orderId": 5741031244955648
+            }
+        ]
+    }
+]
+```
+
+
+
+### b) Criar pedido
+
+**Método:** POST
+
+**URL:** https://sales-provider.appspot.com/api/products
+
+**Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
+
+**Exemplo de corpo de requisição:**
+
+```json
+{ 
+    "email": "doralice@siecola.com.br",
+    "freightPrice": 40,
+    "orderItems": [
+    	{
+    		"productId": 5707702298738688
+    	},
+    	{
+    		"productId": 5668600916475904
+    	}
+	]
+}
+```
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5741031244955648,
+    "email": "doralice@siecola.com.br",
+    "freightPrice": 40,
+    "orderItems": [
+        {
+            "id": 5685265389584384,
+            "productId": 5707702298738688,
+            "orderId": 5741031244955648
+        },
+        {
+            "id": 5757334940811264,
+            "productId": 5668600916475904,
+            "orderId": 5741031244955648
+        }
+    ]
+}
+```
+
+### 
+
+### c) Buscar pedido pelo Id
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/products/{id}
+
+**Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5741031244955648,
+    "email": "doralice@siecola.com.br",
+    "freightPrice": 40,
+    "orderItems": [
+        {
+            "id": 5685265389584384,
+            "productId": 5707702298738688,
+            "orderId": 5741031244955648
+        },
+        {
+            "id": 5757334940811264,
+            "productId": 5668600916475904,
+            "orderId": 5741031244955648
+        }
+    ]
+}
+```
+
+### 
+
+### d) Buscar pedidos de um usuário pelo seu e-mail
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/products/byemail?email={email}
+
+**Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
+
+**Exemplo de resposta:**
+
+```json
+[
+    {
+        "id": 5668600916475904,
+        "email": "doralice@siecola.com.br",
+        "freightPrice": 40,
+        "orderItems": [
+            {
+                "id": 5649050225344512,
+                "productId": 5707702298738688,
+                "orderId": 5668600916475904
+            },
+            {
+                "id": 5724160613416960,
+                "productId": 5668600916475904,
+                "orderId": 5668600916475904
+            }
+        ]
+    },
+    {
+        "id": 5741031244955648,
+        "email": "doralice@siecola.com.br",
+        "freightPrice": 40,
+        "orderItems": [
+            {
+                "id": 5685265389584384,
+                "productId": 5707702298738688,
+                "orderId": 5741031244955648
+            },
+            {
+                "id": 5757334940811264,
+                "productId": 5668600916475904,
+                "orderId": 5741031244955648
+            }
+        ]
+    }
+]
+```
+
+
+
+### e) Apagar pedido
+
+**Método:** DELETE
+
+**URL:** https://sales-provider.appspot.com/api/products/{id}
+
+**Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
+
+**Exemplo de resposta:**
+
+```json
+{
+    "id": 5741031244955648,
+    "email": "doralice@siecola.com.br",
+    "freightPrice": 40,
+    "orderItems": [
+        {
+            "id": 5685265389584384,
+            "productId": 5707702298738688,
+            "orderId": 5741031244955648
+        },
+        {
+            "id": 5757334940811264,
+            "productId": 5668600916475904,
+            "orderId": 5741031244955648
+        }
+    ]
+}
+```

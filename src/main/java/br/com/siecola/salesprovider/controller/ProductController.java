@@ -68,7 +68,7 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAuthority('" + CheckRole.ROLE_ADMIN + "')")
-    @DeleteMapping
+    @DeleteMapping("/{code}")
     public ResponseEntity<?> deleteProduct(@PathVariable String code) {
         try {
             return new ResponseEntity<>(productRepository
