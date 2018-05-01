@@ -48,6 +48,170 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 ## 3 - Serviço de gerenciamento de usuários
 
+### a) Listar todos os usuários
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/users
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de resposta:**
+
+```json
+[
+    {
+        "id": 5741031244955648,
+        "email": "doralice@siecola.com.br",
+        "password": "doralice",
+        "gcmRegId": null,
+        "lastLogin": null,
+        "lastGCMRegister": null,
+        "role": "USER",
+        "enabled": true
+    },
+    {
+        "id": 5668600916475904,
+        "email": "matilde@siecola.com.br",
+        "password": "matilde",
+        "gcmRegId": null,
+        "lastLogin": null,
+        "lastGCMRegister": null,
+        "role": "ADMIN",
+        "enabled": true
+    }
+]
+```
+
+
+
+### b) Criar um usuário
+
+**Método:** POST
+
+**URL:** https://sales-provider.appspot.com/api/users
+
+**Permissão de acesso:** somente usuário com papel ADMIN
+
+**Exemplo de corpo de requisição:**
+
+```json
+{
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
+**Exemplo de mensagem de resposta:**
+
+```json
+{
+    "id": 5629499534213120,
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
+
+
+### c) Alterar um usuário pelo e-mail
+
+**Método:** PUT
+
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+
+**Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
+
+**Exemplo de corpo de requisição:**
+
+```json
+{
+    "id": 5629499534213120,
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
+**Exemplo de mensagem de resposta:**
+
+```json
+{
+    "id": 5629499534213120,
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
+
+
+### d) Buscar um usuário pelo e-mail
+
+**Método:** GET
+
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+
+**Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
+
+**Exemplo de mensagem de resposta:**
+
+```json
+{
+    "id": 5629499534213120,
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
+
+
+### e) Apagar um usuário pelo e-mail
+
+**Método:** DELETE
+
+**URL:** https://sales-provider.appspot.com/api/users/byemail?email=doralice@siecola.com.br
+
+**Permissão de acesso:** somente usuário com papel ADMIN ou o próprio usuário alvo da operação
+
+**Exemplo de mensagem de resposta:**
+
+```json
+{
+    "id": 5629499534213120,
+    "email": "doralice@siecola.com.br",
+    "password": "doralice",
+    "gcmRegId": null,
+    "lastLogin": null,
+    "lastGCMRegister": null,
+    "role": "USER",
+    "enabled": true
+}
+```
+
 
 
 ## 4 - Serviço de gerenciamento de produtos

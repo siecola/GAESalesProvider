@@ -71,6 +71,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" + CheckRole.ROLE_ADMIN + "')")
     @GetMapping("/byemail")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email,
                                                Authentication authentication) {
@@ -90,6 +91,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" + CheckRole.ROLE_ADMIN + "')")
     @DeleteMapping(path = "/byemail")
     public ResponseEntity<User> deleteUser(
             @RequestParam("email") String email, Authentication authentication) {
