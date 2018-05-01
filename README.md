@@ -46,6 +46,12 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 
 
+> **Usuário com papel ADMIN
+>
+> O provedor de serviço de vendas já possui um usuário com papel de administrador, que não pode ser alterado nem apagado. Seu login é `matilde@siecola.com.br` e sua senha é `matilde`.
+
+
+
 ## 3 - Serviço de gerenciamento de usuários
 
 ### a) Listar todos os usuários
