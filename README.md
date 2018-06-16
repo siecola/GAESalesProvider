@@ -421,7 +421,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** POST
 
-**URL:** https://sales-provider.appspot.com/api/products
+**URL:** https://sales-provider.appspot.com/api/orders
 
 **Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
 
