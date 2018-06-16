@@ -470,7 +470,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** GET
 
-**URL:** https://sales-provider.appspot.com/api/products/{id}
+**URL:** https://sales-provider.appspot.com/api/orders/{id}
 
 **Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
 
@@ -502,7 +502,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** GET
 
-**URL:** https://sales-provider.appspot.com/api/products/byemail?email={email}
+**URL:** https://sales-provider.appspot.com/api/orders/byemail?email={email}
 
 **Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
 
@@ -553,7 +553,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **Método:** DELETE
 
-**URL:** https://sales-provider.appspot.com/api/products/{id}
+**URL:** https://sales-provider.appspot.com/api/orders/{id}
 
 **Permissão de acesso:** usuário com papel ADMIN ou usuário autenticado dono do pedido
 
