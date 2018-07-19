@@ -310,7 +310,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 ### d) Alterar produto
 
-**Método:** POST
+**Método:** PUT
 
 **URL:** https://sales-provider.appspot.com/api/products/{code}
 
