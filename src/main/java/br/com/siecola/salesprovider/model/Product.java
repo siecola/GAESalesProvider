@@ -9,6 +9,7 @@ public class Product implements Serializable {
     private String description;
     private String code;
     private double price;
+    private int quantity;
 
     public long getId() {
         return id;
@@ -48,5 +49,13 @@ public class Product implements Serializable {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

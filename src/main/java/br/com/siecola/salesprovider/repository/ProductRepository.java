@@ -1,10 +1,12 @@
 package br.com.siecola.salesprovider.repository;
 
+import br.com.siecola.salesprovider.exception.NonValidProductException;
 import br.com.siecola.salesprovider.exception.ProductAlreadyExistsException;
 import br.com.siecola.salesprovider.exception.ProductNotFoundException;
 import br.com.siecola.salesprovider.model.Product;
 import com.google.appengine.api.datastore.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class ProductRepository {
     private static final String PROPERTY_DESCRIPTION = "description";
     private static final String PROPERTY_CODE = "code";
     private static final String PROPERTY_PRICE = "price";
-
+    private static final String PROPERTY_QUANTITY = "quantity";
 
     public List<Product> getProducts() {
         List<Product> products = new ArrayList<>();
@@ -64,9 +66,13 @@ public class ProductRepository {
         }
     }
 
-    public Product saveProduct (Product product) throws ProductAlreadyExistsException {
+    public Product saveProduct (Product product) throws ProductAlreadyExistsException, NonValidProductException {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
+
+        if (!isValidProduct(product)) {
+            throw new NonValidProductException("Non valid product");
+        }
 
         if (!checkIfCodeExist (product)) {
             Key key = KeyFactory.createKey(PRODUCT_KIND, PRODUCT_KEY);
@@ -86,7 +92,11 @@ public class ProductRepository {
     }
 
     public Product updateProduct (Product product, String code)
-            throws ProductNotFoundException, ProductAlreadyExistsException {
+            throws ProductNotFoundException, ProductAlreadyExistsException, NonValidProductException {
+
+        if (!isValidProduct(product)) {
+            throw new NonValidProductException("Non valid product");
+        }
 
         if (!checkIfCodeExist (product)) {
             DatastoreService datastore = DatastoreServiceFactory
@@ -138,6 +148,10 @@ public class ProductRepository {
         }
     }
 
+    private boolean isValidProduct(Product product) {
+        return StringUtils.hasText(product.getCode()) && StringUtils.hasText(product.getName());
+    }
+
     private boolean checkIfCodeExist (Product product) {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
@@ -165,6 +179,7 @@ public class ProductRepository {
         productEntity.setProperty(PROPERTY_DESCRIPTION, product.getDescription());
         productEntity.setProperty(PROPERTY_CODE, product.getCode());
         productEntity.setProperty(PROPERTY_PRICE, product.getPrice());
+        productEntity.setProperty(PROPERTY_QUANTITY, product.getQuantity());
     }
 
     private Product entityToProduct(Entity productEntity) {
@@ -174,7 +189,11 @@ public class ProductRepository {
         product.setDescription((String) productEntity.getProperty(PROPERTY_DESCRIPTION));
         product.setCode((String) productEntity.getProperty(PROPERTY_CODE));
         product.setPrice((Double) productEntity.getProperty(PROPERTY_PRICE));
-
+        if (productEntity.hasProperty(PROPERTY_QUANTITY)) {
+            product.setQuantity(((Number)productEntity.getProperty(PROPERTY_QUANTITY)).intValue());
+        } else {
+            product.setQuantity(0);
+        }
         return product;
     }
 }

@@ -1,5 +1,6 @@
 package br.com.siecola.salesprovider.controller;
 
+import br.com.siecola.salesprovider.exception.NonValidProductException;
 import br.com.siecola.salesprovider.exception.ProductAlreadyExistsException;
 import br.com.siecola.salesprovider.exception.ProductNotFoundException;
 import br.com.siecola.salesprovider.model.Product;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -42,7 +44,8 @@ public class ProductController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PreAuthorize("hasAuthority('" + CheckRole.ROLE_ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
+            CheckRole.ROLE_ADMIN + "')")
     @PostMapping
     public ResponseEntity<?> saveProduct(@RequestBody Product product) {
         try {
@@ -51,10 +54,14 @@ public class ProductController {
         } catch (ProductAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(),
                     HttpStatus.PRECONDITION_FAILED);
+        } catch (NonValidProductException e) {
+            return new ResponseEntity<>(e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PreAuthorize("hasAuthority('" + CheckRole.ROLE_ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
+            CheckRole.ROLE_ADMIN + "')")
     @PutMapping("/{code}")
     public ResponseEntity<?> updateProduct(@RequestBody Product product,
                                            @PathVariable String code) {
@@ -64,10 +71,14 @@ public class ProductController {
         } catch (ProductNotFoundException | ProductAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(),
                     HttpStatus.PRECONDITION_FAILED);
+        } catch (NonValidProductException e) {
+            return new ResponseEntity<>(e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PreAuthorize("hasAuthority('" + CheckRole.ROLE_ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
+            CheckRole.ROLE_ADMIN + "')")
     @DeleteMapping("/{code}")
     public ResponseEntity<?> deleteProduct(@PathVariable String code) {
         try {
