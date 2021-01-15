@@ -97,7 +97,7 @@ A resposta a essa autenticação é o token de acesso no seguinte formato:
 
 **URL:** https://sales-provider.appspot.com/api/users
 
-**Permissão de acesso:** somente usuário com papel ADMIN
+**Permissão de acesso:** não é necessário um usuário autenticado
 
 **Exemplo de corpo de requisição:**
 

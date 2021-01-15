@@ -10,15 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+//TODO - Users under USER role can fetch only products created by them
+//TODO - Add the userEmail to each product
 @RestController
-@RequestMapping(path="/api/products")
+@RequestMapping(path = "/api/products")
 public class ProductController {
 
     private static final Logger log = Logger.getLogger("ProductController");
@@ -26,19 +28,19 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-
     @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
             CheckRole.ROLE_ADMIN + "')")
     @GetMapping
-    public List<Product> getProducts() {
-        return productRepository.getProducts();
+    public List<Product> getProducts(Authentication authentication) {
+        return productRepository.getProducts(CheckRole.hasRoleAdmin(authentication), authentication.getName());
     }
 
     @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
             CheckRole.ROLE_ADMIN + "')")
     @GetMapping("/{code}")
-    public ResponseEntity<Product> getProductByCode(@PathVariable String code) {
-        Optional<Product> optProduct = productRepository.getByCode(code);
+    public ResponseEntity<Product> getProductByCode(@PathVariable String code, Authentication authentication) {
+        Optional<Product> optProduct = productRepository.getByCode(code,
+                authentication.getName());
         return optProduct.map(
                 product -> new ResponseEntity<>(product, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -47,9 +49,9 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
             CheckRole.ROLE_ADMIN + "')")
     @PostMapping
-    public ResponseEntity<?> saveProduct(@RequestBody Product product) {
+    public ResponseEntity<?> saveProduct(@RequestBody Product product, Authentication authentication) {
         try {
-            return new ResponseEntity<>(productRepository.saveProduct(product),
+            return new ResponseEntity<>(productRepository.saveProduct(product, authentication.getName()),
                     HttpStatus.CREATED);
         } catch (ProductAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(),
@@ -64,10 +66,11 @@ public class ProductController {
             CheckRole.ROLE_ADMIN + "')")
     @PutMapping("/{code}")
     public ResponseEntity<?> updateProduct(@RequestBody Product product,
-                                           @PathVariable String code) {
+                                           @PathVariable String code, Authentication authentication) {
         try {
             return new ResponseEntity<>(productRepository
-                    .updateProduct(product, code), HttpStatus.OK);
+                    .updateProduct(product, code, authentication.getName()),
+                    HttpStatus.OK);
         } catch (ProductNotFoundException | ProductAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(),
                     HttpStatus.PRECONDITION_FAILED);
@@ -80,10 +83,11 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
             CheckRole.ROLE_ADMIN + "')")
     @DeleteMapping("/{code}")
-    public ResponseEntity<?> deleteProduct(@PathVariable String code) {
+    public ResponseEntity<?> deleteProduct(@PathVariable String code, Authentication authentication) {
         try {
             return new ResponseEntity<>(productRepository
-                    .deleteProduct(code), HttpStatus.OK);
+                    .deleteProduct(code, CheckRole.hasRoleAdmin(authentication), authentication.getName()),
+                    HttpStatus.OK);
         } catch (ProductNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(),
                     HttpStatus.PRECONDITION_FAILED);

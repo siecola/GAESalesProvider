@@ -31,11 +31,13 @@ public class UserController {
         return userRepository.getUsers();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<User> saveUser(@RequestBody User user) {
         try {
-            return new ResponseEntity<User>(userRepository.saveUser(user),
+            user.setRole(CheckRole.ROLE_USER);
+            User userCreated = userRepository.saveUser(user);
+
+            return new ResponseEntity<User>(userCreated,
                     HttpStatus.OK);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);

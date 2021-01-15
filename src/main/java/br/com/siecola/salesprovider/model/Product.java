@@ -1,5 +1,7 @@
 package br.com.siecola.salesprovider.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 public class Product implements Serializable {
@@ -10,6 +12,7 @@ public class Product implements Serializable {
     private String code;
     private double price;
     private int quantity;
+    private String userEmail;
 
     public long getId() {
         return id;
@@ -57,5 +60,14 @@ public class Product implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @JsonIgnore
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

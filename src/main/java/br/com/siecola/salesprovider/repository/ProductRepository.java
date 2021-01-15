@@ -26,8 +26,9 @@ public class ProductRepository {
     private static final String PROPERTY_CODE = "code";
     private static final String PROPERTY_PRICE = "price";
     private static final String PROPERTY_QUANTITY = "quantity";
+    private static final String PROPERTY_USER_EMAIL = "userEmail";
 
-    public List<Product> getProducts() {
+    public List<Product> getProducts(boolean isAdmin, String userEmail) {
         List<Product> products = new ArrayList<>();
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
@@ -35,6 +36,12 @@ public class ProductRepository {
         Query query;
         query = new Query(PRODUCT_KIND).addSort(PROPERTY_CODE,
                 Query.SortDirection.ASCENDING);
+
+        if (!isAdmin) {
+            Query.Filter filter = new Query.FilterPredicate(PROPERTY_USER_EMAIL,
+                    Query.FilterOperator.EQUAL, userEmail);
+            query.setFilter(filter);
+        }
 
         List<Entity> entities = datastore.prepare(query).asList(
                 FetchOptions.Builder.withDefaults());
@@ -48,12 +55,11 @@ public class ProductRepository {
         return products;
     }
 
-    public Optional<Product> getByCode (String code) {
+    public Optional<Product> getByCode(String code, String userEmail) {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter filter = new Query.FilterPredicate(PROPERTY_CODE,
-                Query.FilterOperator.EQUAL, code);
+        Query.CompositeFilter filter = getCodeUserEmailFilter(code, userEmail);
 
         Query query = new Query(PRODUCT_KIND).setFilter(filter);
 
@@ -66,7 +72,8 @@ public class ProductRepository {
         }
     }
 
-    public Product saveProduct (Product product) throws ProductAlreadyExistsException, NonValidProductException {
+    public Product saveProduct(Product product, String userEmail) throws ProductAlreadyExistsException,
+            NonValidProductException {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
@@ -74,11 +81,12 @@ public class ProductRepository {
             throw new NonValidProductException("Non valid product");
         }
 
-        if (!checkIfCodeExist (product)) {
+        product.setUserEmail(userEmail);
+        if (!checkIfCodeExist(product)) {
             Key key = KeyFactory.createKey(PRODUCT_KIND, PRODUCT_KEY);
             Entity entity = new Entity(PRODUCT_KIND, key);
 
-            productToEntity (product, entity);
+            productToEntity(product, entity);
 
             datastore.put(entity);
 
@@ -91,26 +99,26 @@ public class ProductRepository {
         }
     }
 
-    public Product updateProduct (Product product, String code)
+    public Product updateProduct(Product product, String code, String userEmail)
             throws ProductNotFoundException, ProductAlreadyExistsException, NonValidProductException {
 
         if (!isValidProduct(product)) {
             throw new NonValidProductException("Non valid product");
         }
 
-        if (!checkIfCodeExist (product)) {
+        product.setUserEmail(userEmail);
+        if (!checkIfCodeExist(product)) {
             DatastoreService datastore = DatastoreServiceFactory
                     .getDatastoreService();
 
-            Query.Filter filter = new Query.FilterPredicate(PROPERTY_CODE,
-                    Query.FilterOperator.EQUAL, code);
+            Query.CompositeFilter filter = getCodeUserEmailFilter(code, userEmail);
 
             Query query = new Query(PRODUCT_KIND).setFilter(filter);
 
             Entity entity = datastore.prepare(query).asSingleEntity();
 
             if (entity != null) {
-                productToEntity (product, entity);
+                productToEntity(product, entity);
 
                 datastore.put(entity);
 
@@ -127,12 +135,11 @@ public class ProductRepository {
         }
     }
 
-    public Product deleteProduct (String code) throws ProductNotFoundException {
+    public Product deleteProduct(String code, boolean isAdmin, String userEmail) throws ProductNotFoundException {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter filter = new Query.FilterPredicate(PROPERTY_CODE,
-                Query.FilterOperator.EQUAL, code);
+        Query.CompositeFilter filter = getCodeUserEmailFilter(code, userEmail);
 
         Query query = new Query(PRODUCT_KIND).setFilter(filter);
 
@@ -148,18 +155,27 @@ public class ProductRepository {
         }
     }
 
+    private Query.CompositeFilter getCodeUserEmailFilter(String code, String userEmail) {
+        Query.Filter codeFilter = new Query.FilterPredicate(PROPERTY_CODE,
+                Query.FilterOperator.EQUAL, code);
+
+        Query.Filter userEmailFilter = new Query.FilterPredicate(PROPERTY_USER_EMAIL,
+                Query.FilterOperator.EQUAL, userEmail);
+
+        return Query.CompositeFilterOperator.and(codeFilter, userEmailFilter);
+    }
+
     private boolean isValidProduct(Product product) {
         return StringUtils.hasText(product.getCode()) && StringUtils.hasText(product.getName());
     }
 
-    private boolean checkIfCodeExist (Product product) {
+    private boolean checkIfCodeExist(Product product) {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 
-        Query.Filter codeFilter = new Query.FilterPredicate(PROPERTY_CODE,
-                Query.FilterOperator.EQUAL, product.getCode());
+        Query.CompositeFilter filter = getCodeUserEmailFilter(product.getCode(), product.getUserEmail());
 
-        Query query = new Query(PRODUCT_KIND).setFilter(codeFilter);
+        Query query = new Query(PRODUCT_KIND).setFilter(filter);
         Entity productEntity = datastore.prepare(query).asSingleEntity();
 
         if (productEntity == null) {
@@ -174,12 +190,13 @@ public class ProductRepository {
         }
     }
 
-    private void productToEntity (Product product, Entity productEntity) {
+    private void productToEntity(Product product, Entity productEntity) {
         productEntity.setProperty(PROPERTY_NAME, product.getName());
         productEntity.setProperty(PROPERTY_DESCRIPTION, product.getDescription());
         productEntity.setProperty(PROPERTY_CODE, product.getCode());
         productEntity.setProperty(PROPERTY_PRICE, product.getPrice());
         productEntity.setProperty(PROPERTY_QUANTITY, product.getQuantity());
+        productEntity.setProperty(PROPERTY_USER_EMAIL, product.getUserEmail());
     }
 
     private Product entityToProduct(Entity productEntity) {
@@ -189,8 +206,9 @@ public class ProductRepository {
         product.setDescription((String) productEntity.getProperty(PROPERTY_DESCRIPTION));
         product.setCode((String) productEntity.getProperty(PROPERTY_CODE));
         product.setPrice((Double) productEntity.getProperty(PROPERTY_PRICE));
+        product.setUserEmail((String) productEntity.getProperty(PROPERTY_USER_EMAIL));
         if (productEntity.hasProperty(PROPERTY_QUANTITY)) {
-            product.setQuantity(((Number)productEntity.getProperty(PROPERTY_QUANTITY)).intValue());
+            product.setQuantity(((Number) productEntity.getProperty(PROPERTY_QUANTITY)).intValue());
         } else {
             product.setQuantity(0);
         }
