@@ -28,7 +28,7 @@ public class ProductRepository {
     private static final String PROPERTY_QUANTITY = "quantity";
     private static final String PROPERTY_USER_EMAIL = "userEmail";
 
-    public List<Product> getProducts(boolean isAdmin, String userEmail) {
+    public List<Product> getProducts(String userEmail) {
         List<Product> products = new ArrayList<>();
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
@@ -37,11 +37,9 @@ public class ProductRepository {
         query = new Query(PRODUCT_KIND).addSort(PROPERTY_CODE,
                 Query.SortDirection.ASCENDING);
 
-        if (!isAdmin) {
-            Query.Filter filter = new Query.FilterPredicate(PROPERTY_USER_EMAIL,
-                    Query.FilterOperator.EQUAL, userEmail);
-            query.setFilter(filter);
-        }
+        Query.Filter filter = new Query.FilterPredicate(PROPERTY_USER_EMAIL,
+                Query.FilterOperator.EQUAL, userEmail);
+        query.setFilter(filter);
 
         List<Entity> entities = datastore.prepare(query).asList(
                 FetchOptions.Builder.withDefaults());
@@ -135,7 +133,7 @@ public class ProductRepository {
         }
     }
 
-    public Product deleteProduct(String code, boolean isAdmin, String userEmail) throws ProductNotFoundException {
+    public Product deleteProduct(String code, String userEmail) throws ProductNotFoundException {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
 

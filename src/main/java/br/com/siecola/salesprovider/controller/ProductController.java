@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-//TODO - Users under USER role can fetch only products created by them
-//TODO - Add the userEmail to each product
 @RestController
 @RequestMapping(path = "/api/products")
 public class ProductController {
@@ -32,7 +30,7 @@ public class ProductController {
             CheckRole.ROLE_ADMIN + "')")
     @GetMapping
     public List<Product> getProducts(Authentication authentication) {
-        return productRepository.getProducts(CheckRole.hasRoleAdmin(authentication), authentication.getName());
+        return productRepository.getProducts(authentication.getName());
     }
 
     @PreAuthorize("hasAnyAuthority('" + CheckRole.ROLE_USER + "','" +
@@ -71,7 +69,10 @@ public class ProductController {
             return new ResponseEntity<>(productRepository
                     .updateProduct(product, code, authentication.getName()),
                     HttpStatus.OK);
-        } catch (ProductNotFoundException | ProductAlreadyExistsException e) {
+        } catch (ProductNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(),
+                    HttpStatus.NOT_FOUND);
+        } catch (ProductAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(),
                     HttpStatus.PRECONDITION_FAILED);
         } catch (NonValidProductException e) {
@@ -86,7 +87,7 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable String code, Authentication authentication) {
         try {
             return new ResponseEntity<>(productRepository
-                    .deleteProduct(code, CheckRole.hasRoleAdmin(authentication), authentication.getName()),
+                    .deleteProduct(code, authentication.getName()),
                     HttpStatus.OK);
         } catch (ProductNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(),
