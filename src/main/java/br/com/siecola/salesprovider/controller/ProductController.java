@@ -91,7 +91,7 @@ public class ProductController {
                     HttpStatus.OK);
         } catch (ProductNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(),
-                    HttpStatus.PRECONDITION_FAILED);
+                    HttpStatus.NOT_FOUND);
         }
     }
 }
